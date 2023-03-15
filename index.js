@@ -26,8 +26,11 @@ Kanalimiz: https://t.me/+EunXVj9KETc3MGRi`);
   }
 });
 bot.use(async (ctx, next) => {
-  // if user is not guest next()
-  const user_id = ctx.from.id;
+  const user_id = ctx.from?.id;
+  // this is from channel
+  if (!user_id) {
+    return;
+  }
   const user = await User.findOne({ "botUser.id": user_id });
   if (!user || user.role === "guest") {
     ctx.reply("Siz hozircha ruxsat berilmagan");
@@ -69,7 +72,10 @@ bot.command("buyruq", async (ctx) => {
   }
 });
 bot.on("message", async (ctx) => {
-  const user_id = ctx.from.id;
+  const user_id = ctx.from?.id;
+  if (!user_id) {
+    return;
+  }
   const user = await User.findOne({ "botUser.id": user_id });
   if (user.step === "start") {
     await Comment.create({
@@ -114,4 +120,5 @@ bot.on("callback_query", async (ctx) => {
     parse_mode: "HTML",
   });
 });
+
 bot.launch();
